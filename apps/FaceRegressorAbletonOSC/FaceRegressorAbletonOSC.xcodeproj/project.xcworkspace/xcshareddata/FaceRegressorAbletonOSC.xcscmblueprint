@@ -1,11 +1,12 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "2B27851675DA58FB331990C19984B61404F09A0D",
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "733FC431EDDD1EE1AF374524BCB8CFA42F3B0A2D",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "CC182281C6D964B9331E36C0CD377F4A30240DEA" : 0,
     "73BE4E551228482DA302485954E0947B5FF250F9" : 0,
+    "733FC431EDDD1EE1AF374524BCB8CFA42F3B0A2D" : 0,
     "2B27851675DA58FB331990C19984B61404F09A0D" : 0,
     "3408B309914B0639E8D618139E80EF3032A46163" : 0
   },
@@ -13,6 +14,7 @@
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "CC182281C6D964B9331E36C0CD377F4A30240DEA" : "..\/..\/addons\/ofxGrt\/libs\/grt",
     "73BE4E551228482DA302485954E0947B5FF250F9" : "..\/..\/addons\/ofxGrt",
+    "733FC431EDDD1EE1AF374524BCB8CFA42F3B0A2D" : "NIME_Face_Music\/",
     "2B27851675DA58FB331990C19984B61404F09A0D" : "ml4a-ofx_Build\/",
     "3408B309914B0639E8D618139E80EF3032A46163" : "..\/..\/addons\/ofxFaceTracker2"
   },
@@ -29,6 +31,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/HalfdanJ\/ofxFaceTracker2.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "3408B309914B0639E8D618139E80EF3032A46163"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/AndreasRef\/NIME_Face_Music.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "733FC431EDDD1EE1AF374524BCB8CFA42F3B0A2D"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nickgillian\/ofxGrt.git",

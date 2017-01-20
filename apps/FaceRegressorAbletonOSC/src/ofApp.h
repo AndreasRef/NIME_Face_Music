@@ -29,6 +29,8 @@ public:
     void update();
     void draw();
     
+    void exit();
+    
     void keyPressed  (int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -40,7 +42,7 @@ public:
     void gotMessage(ofMessage msg);
     
     bool setRegressifier( const int type );
-    void sendOSC(float value);
+    void sendOSC(float value1, float value2, float value3);
     
     //Create some variables for the demo
     RegressionData trainingData;      		//This will store our training data
@@ -116,9 +118,26 @@ public:
     
     //GUI
     ofxPanel gui;
+    
     ofxFloatSlider val1;
+    ofxFloatSlider smooth1;
+    ofxToggle toggle1;
+    ofxToggle bypass1;
+    
+    ofxFloatSlider val2;
+    ofxFloatSlider smooth2;
+    ofxToggle toggle2;
+    ofxToggle bypass2;
+    
+    ofxFloatSlider val3;
+    ofxFloatSlider smooth3;
+    ofxToggle toggle3;
+    ofxToggle bypass3;
     
     float rawVal1 = 0.5;
+    float rawVal2 = 0.5;
+    float rawVal3 = 0.5;
+    //float smooth1 = 0.15;
     
     
     //Debug stuff
@@ -127,5 +146,5 @@ public:
     
     
 
-    
+    int nOutputs = 3;
 };

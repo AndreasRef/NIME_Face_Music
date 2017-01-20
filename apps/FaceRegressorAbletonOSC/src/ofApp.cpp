@@ -1,6 +1,5 @@
 /*
-Demo app sending value from the regression model to AbletonOSC (via the port also used by Wekinator).
-
+ Demo app sending value from the regression model to AbletonOSC (via the port also used by Wekinator).
  
  Instructions:
  1) Set the desired output value in the gui slider
@@ -8,8 +7,8 @@ Demo app sending value from the regression model to AbletonOSC (via the port als
  3) Repeat step 1) and 2) with different output values and different facial expressions / head orientations
  4) Press [t] to train the model
  5) Move your face and see the gui slider change based on your facial orientation and expression.
- If AbletonOSC is running simultaniously, you should also see and hear the changes there.
-*/
+ 6) If AbletonOSC is running simultaniously, you should also see and hear the changes there.
+ */
 
 #include "ofApp.h"
 
@@ -40,7 +39,7 @@ void ofApp::setup(){
     
     trainingInputs = GESTUREINPUTS*gestureBool+ORIENTATIONINPUTS*orientationBool+RAWINPUTS*rawBool; //RAWINPUTS=136, ORIENTATIONINPUTS=9, GESTUREINPUTS=5
     
-    trainingData.setInputAndTargetDimensions( trainingInputs, 1 );
+    trainingData.setInputAndTargetDimensions( trainingInputs, nOutputs );
     
     
     //set the default classifier
@@ -48,8 +47,8 @@ void ofApp::setup(){
     
     ofSetVerticalSync(true);
     
-//    rectW = 100;
-//    rectH = 100;
+    //    rectW = 100;
+    //    rectH = 100;
     
     
     //Facetracker
@@ -83,19 +82,30 @@ void ofApp::setup(){
     //GUI
     gui.setup();
     gui.setPosition(300, 4);
-    gui.setSize(300, 75);
-    gui.setDefaultWidth(300);
-    gui.setDefaultHeight(75);
-    gui.add(val1.setup("output value", 0.7, 0.0, 1.0));
+    //    gui.setSize(300, 75);
+    //    gui.setDefaultWidth(300);
+    //    gui.setDefaultHeight(75);
+    gui.add(val1.setup("output1", 0.7, 0.0, 1.0));
+    gui.add(smooth1.setup("smooth1", 0.15, 0.0, 1));
+    gui.add(toggle1.setup("toggle1", false));
+    gui.add(bypass1.setup("bypass1", false));
     
+    gui.add(val2.setup("output2", 0.7, 0.0, 1.0));
+    gui.add(smooth2.setup("smooth2", 0.15, 0.0, 1));
+    gui.add(toggle2.setup("toggle2", false));
+    gui.add(bypass2.setup("bypass2", false));
+    
+    gui.add(val3.setup("output3", 0.7, 0.0, 1.0));
+    gui.add(smooth3.setup("smooth3", 0.15, 0.0, 1));
+    gui.add(toggle3.setup("toggle3", false));
+    gui.add(bypass3.setup("bypass3", false));
+    
+    gui.loadFromFile("settings.xml");
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-//    rectW = ofClamp(rectW, 10, ofGetWidth());
-//    rectH = ofClamp(rectH, 10, ofGetHeight());
     
     
     //FaceTracker2
@@ -110,7 +120,6 @@ void ofApp::update(){
     
     if ( tracker.size()>0) {
         
-
         
         //RAW (136 values)
         if (rawBool) {
@@ -139,20 +148,18 @@ void ofApp::update(){
         
         //GESTURES (5 values)
         if (gestureBool) {
-            
-
             trainingSample[0+RAWINPUTS*rawBool+ORIENTATIONINPUTS*orientationBool] = getGesture(RIGHT_EYE_OPENNESS);
             trainingSample[1+RAWINPUTS*rawBool+ORIENTATIONINPUTS*orientationBool] = getGesture(LEFT_EYE_OPENNESS);
             trainingSample[2+RAWINPUTS*rawBool+ORIENTATIONINPUTS*orientationBool] = getGesture(RIGHT_EYEBROW_HEIGHT);
             trainingSample[3+RAWINPUTS*rawBool+ORIENTATIONINPUTS*orientationBool] = getGesture(LEFT_EYEBROW_HEIGHT);
             trainingSample[4+RAWINPUTS*rawBool+ORIENTATIONINPUTS*orientationBool] = getGesture(MOUTH_HEIGHT);
-
-
+            
+            
         }
         
         
         
-    
+        
         //Update the training mode if needed
         if( trainingModeActive){
             
@@ -173,10 +180,12 @@ void ofApp::update(){
             if( recordTrainingData ){
                 
                 
-
                 
-                VectorFloat targetVector(1);
+                
+                VectorFloat targetVector(3);
                 targetVector[0] = val1;
+                targetVector[1] = val2;
+                targetVector[2] = val3;
                 //targetVector[0] = rectW;
                 //targetVector[1] = rectH;
                 
@@ -191,17 +200,19 @@ void ofApp::update(){
         //Update the prediction mode if active
         if( predictionModeActive ){
             
-//            inputVector[0] = getGesture(RIGHT_EYE_OPENNESS);
-//            inputVector[1] = getGesture(LEFT_EYE_OPENNESS);
-//            inputVector[2] = getGesture(RIGHT_EYEBROW_HEIGHT);
-//            inputVector[3] = getGesture(LEFT_EYEBROW_HEIGHT);
-//            inputVector[4] = getGesture(MOUTH_HEIGHT);
+            //            inputVector[0] = getGesture(RIGHT_EYE_OPENNESS);
+            //            inputVector[1] = getGesture(LEFT_EYE_OPENNESS);
+            //            inputVector[2] = getGesture(RIGHT_EYEBROW_HEIGHT);
+            //            inputVector[3] = getGesture(LEFT_EYEBROW_HEIGHT);
+            //            inputVector[4] = getGesture(MOUTH_HEIGHT);
             
-
+            
             if( pipeline.predict( inputVector ) ){
                 rawVal1 = ofClamp(pipeline.getRegressionData()[0],0.0, 1.0);
-//                rectW = ofClamp(pipeline.getRegressionData()[0],10, ofGetWidth());
-//                rectH = ofClamp(pipeline.getRegressionData()[1],10, ofGetHeight());
+                rawVal2 = ofClamp(pipeline.getRegressionData()[1],0.0, 1.0);
+                rawVal3 = ofClamp(pipeline.getRegressionData()[2],0.0, 1.0);
+                //                rectW = ofClamp(pipeline.getRegressionData()[0],10, ofGetWidth());
+                //                rectH = ofClamp(pipeline.getRegressionData()[1],10, ofGetHeight());
             }else{
                 infoText = "ERROR: Failed to run prediction!";
             }
@@ -209,9 +220,45 @@ void ofApp::update(){
     }
     
     if (predictionModeActive) {
-    val1 = val1 + ( rawVal1 - val1 ) * 0.15;
+        
+        if (bypass1 == false) {
+            if (toggle1) {
+                if (rawVal1 > 0.5) {
+                    val1 = 1;
+                } else {
+                    val1 = 0;
+                }
+            } else {
+                val1 = val1 + ( rawVal1 - val1 ) * (1-smooth1);
+            }
+        }
+        
+        if (bypass2 == false) {
+            if (toggle2) {
+                if (rawVal2 > 0.5) {
+                    val2 = 1;
+                } else {
+                    val2 = 0;
+                }
+            } else {
+                val2 = val2 + ( rawVal2 - val2 ) * (1-smooth2);
+            }
+        }
+        
+        if (bypass3 == false) {
+            if (toggle3) {
+                if (rawVal3 > 0.5) {
+                    val3 = 1;
+                } else {
+                    val3 = 0;
+                }
+            } else {
+                val3 = val3 + ( rawVal3 - val3 ) * (1-smooth3);
+            }
+        }
+        
     }
-    sendOSC(val1);
+    sendOSC(val1, val2, val3);
 }
 
 //--------------------------------------------------------------
@@ -264,7 +311,7 @@ void ofApp::draw(){
         }
     }
     
-
+    
     if( trainingModeActive ){
         if( !recordTrainingData ){
             ofSetColor(255, 204, 0);
@@ -279,11 +326,11 @@ void ofApp::draw(){
         }
     }
     
-
-//    ofSetColor(255, 0, 0, 100);
-//    ofRectangle myRect(0, 0, 100, 100);
-//    myRect.setFromCenter(ofGetWidth()/2, ofGetHeight()/2, rectW, rectH);
-//    ofDrawRectangle(myRect);
+    
+    //    ofSetColor(255, 0, 0, 100);
+    //    ofRectangle myRect(0, 0, 100, 100);
+    //    myRect.setFromCenter(ofGetWidth()/2, ofGetHeight()/2, rectW, rectH);
+    //    ofDrawRectangle(myRect);
     
     
     //Draw the info text
@@ -296,16 +343,16 @@ void ofApp::draw(){
         ofSetColor(100,100,100);
         ofDrawRectangle( 5, 5, 265, 620 );
         ofSetColor( 255, 255, 255 );
-
+        
         smallFont.drawString( "FACETRACKER2 REGRESSION EXAMPLE", textX, textY ); textY += textSpacer*2;
         smallFont.drawString( "[i]: Toogle Info", textX, textY ); textY += textSpacer;
         
-//        smallFont.drawString( "[-]: rectH-=10", textX, textY ); textY += textSpacer;
-//        smallFont.drawString( "[+]: rectH+=10", textX, textY ); textY += textSpacer;
-//        smallFont.drawString( "[1]: rectW-=10", textX, textY ); textY += textSpacer;
-//        smallFont.drawString( "[2]: rectW+=10", textX, textY ); textY += textSpacer;
-//        smallFont.drawString( "rectW:" + ofToString(rectW), textX, textY ); textY += textSpacer;
-//        smallFont.drawString( "rectH:" + ofToString(rectH), textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "[-]: rectH-=10", textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "[+]: rectH+=10", textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "[1]: rectW-=10", textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "[2]: rectW+=10", textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "rectW:" + ofToString(rectW), textX, textY ); textY += textSpacer;
+        //        smallFont.drawString( "rectH:" + ofToString(rectH), textX, textY ); textY += textSpacer;
         textY += textSpacer;
         
         smallFont.drawString( "[r]: Record Sample", textX, textY ); textY += textSpacer;
@@ -343,8 +390,8 @@ void ofApp::draw(){
         
         
         
-//        ofSetColor(0);
-//        smallFont.drawString( "INSTRUCTIONS: \n \n 1) Set the height and width of the rectangle using [+], [-], [1] and [2] keys \n \n 2) Press [r] to record some training samples containing your selected facial features (gestures, orientation and/or raw points) and the width+height of the rectangle. \n \n 3) Repeat step 1) and 2) with different rectangle width and height and different facial expressions / head orientations \n \n 4) Move your face and see the changes in rectangle width and height based on your facial orientation and expression",  textX, 750 );
+        //        ofSetColor(0);
+        //        smallFont.drawString( "INSTRUCTIONS: \n \n 1) Set the height and width of the rectangle using [+], [-], [1] and [2] keys \n \n 2) Press [r] to record some training samples containing your selected facial features (gestures, orientation and/or raw points) and the width+height of the rectangle. \n \n 3) Repeat step 1) and 2) with different rectangle width and height and different facial expressions / head orientations \n \n 4) Move your face and see the changes in rectangle width and height based on your facial orientation and expression",  textX, 750 );
         
     }
     gui.draw();
@@ -379,7 +426,7 @@ void ofApp::keyPressed(int key){
                 infoText = "Training data loaded from file";
             }else infoText = "WARNING: Failed to load training data from file";
             break;
-        
+            
         case 'd':
             predictionModeActive = false;
             infoText = "Model paused";
@@ -446,7 +493,7 @@ void ofApp::keyPressed(int key){
             rectW+=10;
             std::cout << "rectW: " << rectW << std::endl;
             break;
-        
+            
         case OF_KEY_TAB:
             setRegressifier( ++this->regressifierType % NUM_REGRESSIFIERS );
             break;
@@ -477,7 +524,7 @@ bool ofApp::setRegressifier( const int type ){
         case NEURAL_NET:
         {
             unsigned int numInputNeurons = trainingData.getNumInputDimensions();
-            unsigned int numHiddenNeurons = 10; 
+            unsigned int numHiddenNeurons = 10;
             unsigned int numOutputNeurons = 1; //1 as we are using multidimensional regression
             
             //Initialize the MLP
@@ -546,12 +593,14 @@ float ofApp:: getGesture (Gesture gesture){
 }
 
 //--------------------------------------------------------------
-void ofApp::sendOSC(float value){
-ofxOscMessage m;
-m.setAddress("/wek/outputs");
-m.addFloatArg(value);
-m.addStringArg("down");
-sender.sendMessage(m, false);
+void ofApp::sendOSC(float value1, float value2, float value3){
+    ofxOscMessage m;
+    m.setAddress("/wek/outputs");
+    m.addFloatArg(value1);
+    m.addFloatArg(value2);
+    m.addFloatArg(value3);
+    //m.addStringArg("down");
+    sender.sendMessage(m, false);
 }
 
 //--------------------------------------------------------------
@@ -571,8 +620,8 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    sendOSC(ofRandom(1));
-
+    //sendOSC(ofRandom(1));
+    
 }
 
 //--------------------------------------------------------------
@@ -591,6 +640,11 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
     
+}
+
+//--------------------------------------------------------------
+void ofApp::exit(){
+    gui.saveToFile("settings.xml");
 }
